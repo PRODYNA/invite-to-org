@@ -18,7 +18,7 @@ func main() {
 	}
 
 	ctx := context.Background()
-	slog.InfoContext("Configuration",
+	slog.InfoContext(ctx, "Configuration",
 		"sourceOrganization", c.SourceOrganization,
 		"targetOrganization", c.TargetOrganization,
 		"dryRun", c.DryRun,

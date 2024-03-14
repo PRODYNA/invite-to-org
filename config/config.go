@@ -1,6 +1,7 @@
 package config
 
 import (
+	"errors"
 	"flag"
 	"log"
 	"log/slog"
@@ -39,6 +40,17 @@ func New() (*Config, error) {
 		Level: level,
 	})))
 	flag.Parse()
+
+	if c.GithubToken == "" {
+		return nil, errors.New("GitHub Token is required")
+	}
+	if c.SourceOrganization == "" {
+		return nil, errors.New("Source Organization is required")
+	}
+	if c.TargetOrganization == "" {
+		return nil, errors.New("Target Organization is required")
+	}
+
 	return &c, nil
 }
 
