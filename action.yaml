@@ -11,6 +11,10 @@ inputs:
   target-organization:
     description: 'The target organization to invite members to'
     required: true
+  dry-run:
+    description: 'If true, the action will only print the list of users that would be invited'
+    required: false
+    default: 'false'
 runs:
   using: 'docker'
   image: 'docker://ghcr.io/prodyna/invite-to-org:v0.1'
@@ -18,3 +22,4 @@ runs:
     GITHUB_TOKEN: ${{ inputs.github-token }}
     SOURCE_ORGANIZATION: ${{ inputs.source-organization }}
     TARGET_ORGANIZATION: ${{ inputs.target-organization }}
+    DRY_RUN: ${{ inputs.dry-run }}

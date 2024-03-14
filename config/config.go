@@ -13,18 +13,22 @@ const (
 	keySourceOrganization = "source-organization"
 	keyTargetOrganization = "target-organization"
 	keyVerbose            = "verbose"
+	keyDryRun             = "dry-run"
 )
 
 type Config struct {
 	GithubToken        string
 	SourceOrganization string
 	TargetOrganization string
+	DryRun             bool
 }
 
 func New() (*Config, error) {
 	c := Config{}
 	flag.StringVar(&c.GithubToken, keyGithubToken, lookupEnvOrString("GITHUB_TOKEN", ""), "The GitHub Token to use for authentication.")
 	flag.StringVar(&c.SourceOrganization, keySourceOrganization, lookupEnvOrString("SOURCE_ORGANIZATION", ""), "The Source organization.")
+	flag.StringVar(&c.TargetOrganization, keyTargetOrganization, lookupEnvOrString("TARGET_ORGANIZATION", ""), "The Target organization.")
+	flag.BoolVar(&c.DryRun, keyDryRun, lookupEnvOrBool("DRY_RUN", false), "Dry run mode.")
 	verbose := flag.Int("verbose", lookupEnvOrInt(keyVerbose, 0), "Verbosity level, 0=info, 1=debug. Overrides the environment variable VERBOSE.")
 
 	level := slog.LevelInfo
@@ -50,6 +54,17 @@ func lookupEnvOrInt(key string, defaultVal int) int {
 		v, err := strconv.Atoi(val)
 		if err != nil {
 			log.Fatalf("LookupEnvOrInt[%s]: %v", key, err)
+		}
+		return v
+	}
+	return defaultVal
+}
+
+func lookupEnvOrBool(key string, defaultVal bool) bool {
+	if val, ok := os.LookupEnv(key); ok {
+		v, err := strconv.ParseBool(val)
+		if err != nil {
+			log.Fatalf("LookupEnvOrBool[%s]: %v", key, err)
 		}
 		return v
 	}
