@@ -1,0 +1,20 @@
+name: 'GitHub Users'
+description: 'GitHub Action that creates list of enterprise users or allows automatic invitation of users'
+author: darko.krizic@prodyna.com
+inputs:
+  github-token:
+    description: 'The GitHub Token to use for authentication, it needs permissions to read member in source-org and invite them to the target-org'
+    required: true
+  source-organization:
+    description: 'The source organization to query for members'
+    required: true
+  target-organization:
+    description: 'The target organization to invite members to'
+    required: true
+runs:
+  using: 'docker'
+  image: 'docker://ghcr.io/prodyna/invite-to-org:v0.1'
+  env:
+    GITHUB_TOKEN: ${{ inputs.github-token }}
+    SOURCE_ORGANIZATION: ${{ inputs.source-organization }}
+    TARGET_ORGANIZATION: ${{ inputs.target-organization }}
