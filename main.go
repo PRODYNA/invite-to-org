@@ -35,7 +35,7 @@ func main() {
 		slog.ErrorContext(ctx, "Unable to load members", "error", err, "organization", c.SourceOrganization)
 		os.Exit(1)
 	}
-	slog.InfoContext(ctx, "Loaded members", "organization", c.SourceOrganization, "members", len(sourceMembers))
+	slog.InfoContext(ctx, "Loaded members", "organization", c.SourceOrganization, "members", len(*sourceMembers))
 
 	targetOrganization := organization.New(graphClient, c.TargetOrganization, c.DryRun)
 	targetMembers, err := targetOrganization.Members(ctx)
@@ -43,9 +43,9 @@ func main() {
 		slog.ErrorContext(ctx, "Unable to load members", "error", err, "organization", c.TargetOrganization)
 		os.Exit(1)
 	}
-	slog.InfoContext(ctx, "Loaded members", "organization", c.TargetOrganization, "members", len(targetMembers))
+	slog.InfoContext(ctx, "Loaded members", "organization", c.TargetOrganization, "members", len(*targetMembers))
 
-	missingMembers := targetOrganization.MissingMembers(sourceMembers)
+	missingMembers := targetOrganization.MissingMembers(*sourceMembers)
 	for _, m := range missingMembers {
 		err := targetOrganization.Invite(ctx, m)
 		if err != nil {
