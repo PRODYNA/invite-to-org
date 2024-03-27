@@ -20,7 +20,7 @@ inputs:
     default: 'false'
 runs:
   using: 'docker'
-  image: 'docker://ghcr.io/prodyna/invite-to-org:v0.1'
+  image: 'docker://ghcr.io/prodyna/invite-to-org:v1.0'
   env:
     GITHUB_TOKEN: ${{ inputs.github-token }}
     ENTERPRISE: ${{ inputs.enterprise }}
