@@ -23,6 +23,8 @@ const (
 	keyVerboseEnvironment            = "VERBOSE"
 	keyDryRun                        = "dry-run"
 	keyDryRunEnvironment             = "DRY_RUN"
+	keyTeam                          = "team"
+	keyTeamEnvironment               = "TEAM"
 )
 
 type Config struct {
@@ -31,6 +33,7 @@ type Config struct {
 	SourceOrganization string
 	TargetOrganization string
 	DryRun             bool
+	Team               string
 }
 
 func New() (*Config, error) {
@@ -40,6 +43,7 @@ func New() (*Config, error) {
 	flag.StringVar(&c.SourceOrganization, keySourceOrganization, lookupEnvOrString(keySourceOrganizationEnvironment, ""), "The Source organization.")
 	flag.StringVar(&c.TargetOrganization, keyTargetOrganization, lookupEnvOrString(keyTargetOrganizationEnvironment, ""), "The Target organization.")
 	flag.BoolVar(&c.DryRun, keyDryRun, lookupEnvOrBool(keyDryRunEnvironment, false), "Dry run mode.")
+	flag.StringVar(&c.Team, keyTeam, lookupEnvOrString(keyTeamEnvironment, ""), "The team to add the members to.")
 	verbose := flag.Int(keyVerbose, lookupEnvOrInt(keyVerboseEnvironment, 0), "Verbosity level, 0=info, 1=debug. Overrides the environment variable VERBOSE.")
 
 	level := slog.LevelError
@@ -69,6 +73,9 @@ func New() (*Config, error) {
 	}
 	if c.TargetOrganization == "" {
 		return nil, errors.New("Target Organization is required")
+	}
+	if c.Team == "" {
+		return nil, errors.New("Team is required")
 	}
 
 	return &c, nil
