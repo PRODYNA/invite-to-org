@@ -10,15 +10,24 @@ import (
 )
 
 const (
-	keyGithubToken        = "github-token"
-	keySourceOrganization = "source-organization"
-	keyTargetOrganization = "target-organization"
-	keyVerbose            = "verbose"
-	keyDryRun             = "dry-run"
+	keyGithubToken            = "github-token"
+	keyGitHubTokenEnvironment = "GITHUB_TOKEN"
+	keyEnterprise             = "enterprise"
+	keyEnterpriseEnvironment  = "ENTERPRISE"
+
+	keySourceOrganization            = "source-organization"
+	keySourceOrganizationEnvironment = "SOURCE_ORGANIZATION"
+	keyTargetOrganization            = "target-organization"
+	keyTargetOrganizationEnvironment = "TARGET_ORGANIZATION"
+	keyVerbose                       = "verbose"
+	keyVerboseEnvironment            = "VERBOSE"
+	keyDryRun                        = "dry-run"
+	keyDryRunEnvironment             = "DRY_RUN"
 )
 
 type Config struct {
 	GithubToken        string
+	Enterprise         string
 	SourceOrganization string
 	TargetOrganization string
 	DryRun             bool
@@ -26,14 +35,22 @@ type Config struct {
 
 func New() (*Config, error) {
 	c := Config{}
-	flag.StringVar(&c.GithubToken, keyGithubToken, lookupEnvOrString("GITHUB_TOKEN", ""), "The GitHub Token to use for authentication.")
-	flag.StringVar(&c.SourceOrganization, keySourceOrganization, lookupEnvOrString("SOURCE_ORGANIZATION", ""), "The Source organization.")
-	flag.StringVar(&c.TargetOrganization, keyTargetOrganization, lookupEnvOrString("TARGET_ORGANIZATION", ""), "The Target organization.")
-	flag.BoolVar(&c.DryRun, keyDryRun, lookupEnvOrBool("DRY_RUN", false), "Dry run mode.")
-	verbose := flag.Int("verbose", lookupEnvOrInt(keyVerbose, 0), "Verbosity level, 0=info, 1=debug. Overrides the environment variable VERBOSE.")
+	flag.StringVar(&c.GithubToken, keyGithubToken, lookupEnvOrString(keyGitHubTokenEnvironment, ""), "The GitHub Token to use for authentication.")
+	flag.StringVar(&c.Enterprise, keyEnterprise, lookupEnvOrString(keyEnterpriseEnvironment, ""), "The GitHub Enterprise to query for repositories.")
+	flag.StringVar(&c.SourceOrganization, keySourceOrganization, lookupEnvOrString(keySourceOrganizationEnvironment, ""), "The Source organization.")
+	flag.StringVar(&c.TargetOrganization, keyTargetOrganization, lookupEnvOrString(keyTargetOrganizationEnvironment, ""), "The Target organization.")
+	flag.BoolVar(&c.DryRun, keyDryRun, lookupEnvOrBool(keyDryRunEnvironment, false), "Dry run mode.")
+	verbose := flag.Int(keyVerbose, lookupEnvOrInt(keyVerboseEnvironment, 0), "Verbosity level, 0=info, 1=debug. Overrides the environment variable VERBOSE.")
 
-	level := slog.LevelInfo
-	if *verbose > 0 {
+	level := slog.LevelError
+	switch *verbose {
+	case 0:
+		level = slog.LevelError
+	case 1:
+		level = slog.LevelWarn
+	case 2:
+		level = slog.LevelInfo
+	case 3:
 		level = slog.LevelDebug
 	}
 	slog.SetDefault(slog.New(slog.NewTextHandler(os.Stderr, &slog.HandlerOptions{
@@ -43,6 +60,9 @@ func New() (*Config, error) {
 
 	if c.GithubToken == "" {
 		return nil, errors.New("GitHub Token is required")
+	}
+	if c.Enterprise == "" {
+		return nil, errors.New("Enterprise is required")
 	}
 	if c.SourceOrganization == "" {
 		return nil, errors.New("Source Organization is required")

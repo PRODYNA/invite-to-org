@@ -5,6 +5,9 @@ inputs:
   github-token:
     description: 'The GitHub Token to use for authentication, it needs permissions to read member in source-org and invite them to the target-org'
     required: true
+  enterprise:
+    description: 'The GitHub Enterprise to query for members'
+    required: true
   source-organization:
     description: 'The source organization to query for members'
     required: true
@@ -20,6 +23,7 @@ runs:
   image: 'docker://ghcr.io/prodyna/invite-to-org:v0.1'
   env:
     GITHUB_TOKEN: ${{ inputs.github-token }}
+    ENTERPRISE: ${{ inputs.enterprise }}
     SOURCE_ORGANIZATION: ${{ inputs.source-organization }}
     TARGET_ORGANIZATION: ${{ inputs.target-organization }}
     DRY_RUN: ${{ inputs.dry-run }}
