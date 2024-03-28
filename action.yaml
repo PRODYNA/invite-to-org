@@ -9,15 +9,22 @@ inputs:
     description: 'The GitHub Enterprise to query for members'
     required: true
   source-organization:
-    description: 'The source organization to query for members'
+    description: 'The source organization name to query for members'
     required: true
   target-organization:
-    description: 'The target organization to invite members to'
+    description: 'The target organization name to invite members to'
     required: true
   dry-run:
     description: 'If true, the action will only print the list of users that would be invited'
     required: false
     default: 'false'
+  verbose:
+    description: 'Verbosity, 0=error, 1=warn, 2=info, 3=debug'
+    required: false
+    default: '2'
+  team:
+    description: 'The team (slug) to invite members to'
+    required: true
 runs:
   using: 'docker'
   image: 'docker://ghcr.io/prodyna/invite-to-org:v1.0'
@@ -27,3 +34,5 @@ runs:
     SOURCE_ORGANIZATION: ${{ inputs.source-organization }}
     TARGET_ORGANIZATION: ${{ inputs.target-organization }}
     DRY_RUN: ${{ inputs.dry-run }}
+    VERBOSE: ${{ inputs.verbose }}
+    TEAM: ${{ inputs.team }}
